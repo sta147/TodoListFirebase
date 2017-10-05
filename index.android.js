@@ -7,27 +7,28 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  View
+  StyleSheet
 } from 'react-native';
 
+import Login from './src/pages/Login';
+import Secured from './src/pages/Secured';
+
 export default class TodoListFirebase extends Component {
+
+
+state = {
+  isLoggedIn: false
+}
+
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
+    if (this.state.isLoggedIn)
+      return <Secured
+          onLogoutPress={() => this.setState({isLoggedIn: false})}
+        />;
+    else
+      return <Login
+          onLoginPress={() => this.setState({isLoggedIn: true})}
+        />;
   }
 }
 
