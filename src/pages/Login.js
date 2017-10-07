@@ -5,7 +5,9 @@ import {
   Text,
   TextInput,
   View,
-  Button
+  Button,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 
 const firebaseConfig = {
@@ -17,60 +19,27 @@ const firebaseConfig = {
     messagingSenderId: "246523711186",
 };
 
+if (!firebase.apps.length) {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
+}
 
 export default class Login extends Component {
 
-  state = {
-    username: '',
-      password: '',
-      isLoggingIn: false,
-      message: ''
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+        password: '',
+        isLoggingIn: false,
+        message: ''
+    }
   }
 
 _userLogin = () => {
   this.setState({isLoggingIn: true, message:''});
-
-  // var params = {
-  //   username: this.state.username,
-  //   password: this.state.password,
-  //   grant_type: 'password'
-  // };
-
-  // var formBody = [];
-  // for (var property in params) {
-  //   var encodedKey = encodeURIComponent(property);
-  //   var encodedValue = encodeURIComponent([params[property]);
-  //   formBody.push(encodeKey + "=" + encodedValue);
-  // }
-  // formBody = formBody.join("&");
-
-// 00-j8Qo5F08pXUS2ntI8hf9sXOLVQZeT9hOZrlhwfm
-  // var proceed = false;
-  // fetch("https://dev-570921.oktapreview.com/oauth2/default", {
-  //                 method: "POST",
-  //                 headers: {
-  //                     'Content-Type': 'application/x-www-form-urlencoded'
-  //                 },
-  //                 body: formBody
-  //             })
-  //             .then((response) => response.json())
-  //             .then((response) => {
-  //                 if (response.status==200) proceed = true;
-  //                 else this.setState({ message: response.message });
-  //             })
-  //             .then(() => {
-  //                 this.setState({ isLoggingIn: false })
-  //                 if (proceed) this.props.onLoginPress();
-  //             })
-  //             .catch(err => {
-  // 				this.setState({ message: err.message });
-  // 				this.setState({ isLoggingIn: false })
-  // 			});
-
-
-
-
+  this.props.onLoginPress();
+  Alert.alert('You have successfully logged in!');
+  this.setState({isLoggingIn: false});
 }
 
   render() {
@@ -81,9 +50,13 @@ _userLogin = () => {
           Login
       </Text>
       <TextInput placeholder='Username'
-          onChangeText={(text) => this.setState({username})}
+          onChangeText={(text) => this.setState({username: text})}
+          value={this.state.username}
        />
-      <TextInput placeholder='Password' />
+      <TextInput placeholder='Password'
+          onChangeText={(text) => this.setState({password: text})}
+          value={this.state.password}
+       />
       <View style={{margin: 7}} />
       {this.state.isLoggingIn && <ActivityIndicator />}
 
@@ -94,7 +67,8 @@ _userLogin = () => {
       )}
 
       <Button
-      disabled={this.state.isLoggingIn||!this.state.username||!this.state.password}
+      disabled={this.state.username.length < 1 || this.state.password.length < 1 || this.state.isLoggingIn}
+
       onPress={this._userLogin}
       title="Submit"
       />
