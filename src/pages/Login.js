@@ -6,22 +6,8 @@ import {
   TextInput,
   View,
   Button,
-  Alert,
   ActivityIndicator
 } from 'react-native';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyALzJmJwrnbTLuT956SpPQP4XEsVjJxmA8",
-    authDomain: "todolistfirebase-4cc93.firebaseapp.com",
-    databaseURL: "https://todolistfirebase-4cc93.firebaseio.com",
-    projectId: "todolistfirebase-4cc93",
-    storageBucket: "todolistfirebase-4cc93.appspot.com",
-    messagingSenderId: "246523711186",
-};
-
-if (!firebase.apps.length) {
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-}
 
 export default class Login extends Component {
 
@@ -37,12 +23,35 @@ export default class Login extends Component {
 
 _userLogin = () => {
   this.setState({isLoggingIn: true, message:''});
-  this.props.onLoginPress();
-  Alert.alert('You have successfully logged in!');
-  this.setState({isLoggingIn: false});
+
+  // Make a call to firebase to log in user.
+      firebase.auth().signInWithEmailAndPassword(
+        this.state.username,
+        this.state.password).then(() => {
+          // then and catch are methods that we call on the Promise returned from
+          // signInWithEmailAndPassword
+          alert('You have successfully logged in!');
+          this.setState({
+            // Clear out the fields when the user logs in and hide the progress indicator.
+            username: '',
+            password: '',
+            isLoggingIn: false
+          });
+          // Take user to secure log in screen
+          this.props.onLoginPress();
+
+      }).catch((error) => {
+        // Leave the fields filled when an error occurs and hide the progress indicator.
+        this.setState({
+          isLoggingIn: false
+        });
+        alert("Log in failed: " + error.message );
+      });
 }
 
   render() {
+        const { navigate } = this.props.navigation;
+
     return (
       <ScrollView style={{padding: 20}}>
       <Text
@@ -54,6 +63,7 @@ _userLogin = () => {
           value={this.state.username}
        />
       <TextInput placeholder='Password'
+      secureTextEntry={true}
           onChangeText={(text) => this.setState({password: text})}
           value={this.state.password}
        />
@@ -61,17 +71,30 @@ _userLogin = () => {
       {this.state.isLoggingIn && <ActivityIndicator />}
 
       {!!this.state.message && (
+        // Error message to display if the user was unsuccessful during login.
         <Text style={{fontSize: 14, color: 'red', padding: 5}}>
         {this.state.message}
         </Text>
       )}
 
       <Button
+      // Should disable the button if either password or username or we are waiting on a network call to finish.
       disabled={this.state.username.length < 1 || this.state.password.length < 1 || this.state.isLoggingIn}
 
       onPress={this._userLogin}
-      title="Submit"
+      title="Log in"
+      sty
       />
+
+      <View style={{marginTop: 10}}/>
+
+      <Button
+      title="Sign up"
+      onPress={() =>
+          navigate('Signup')
+        }
+       />
+
       </ScrollView>
 
     )
