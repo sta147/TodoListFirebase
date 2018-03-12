@@ -1,2 +1,2 @@
 # TodoListFirebase
-To do list app in Firebase using React Native.
+To do list app in React Native using Firebase.
